@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Text Editor</string>
+    <string name="open">Open File</string>
+</resources>

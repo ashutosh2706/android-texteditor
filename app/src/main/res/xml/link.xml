@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <shortcut
+        android:shortcutId="open"
+        android:enabled="true"
+        android:icon="@mipmap/ic_folder"
+        android:shortcutShortLabel="@string/open"
+        android:shortcutLongLabel="@string/open">
+
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="m.ashutosh.texteditor"
+            android:targetClass="m.ashutosh.texteditor.OpenNewFile"/>
+    </shortcut>
+
+</shortcuts>

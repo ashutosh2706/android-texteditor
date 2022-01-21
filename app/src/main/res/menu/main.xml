@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:icon="@drawable/a"
+        android:title="Options"
+        app:showAsAction="always">
+
+        <menu>
+
+            <item
+                android:id="@+id/save"
+                android:icon="@drawable/b"
+                android:title="Save"
+                app:showAsAction="never" />
+
+            <item
+                android:id="@+id/encrypt"
+                android:icon="@drawable/k"
+                android:title="Encrypt"
+                app:showAsAction="never"/>
+
+            <item
+                android:id="@+id/decrypt"
+                android:title="Decrypt"
+                android:icon="@drawable/n"
+                app:showAsAction="never"/>
+
+            <item
+                android:icon="@drawable/c"
+                android:title="Open"
+                app:showAsAction="never">
+                <menu>
+
+                    <item
+                        android:id="@+id/open_last"
+                        android:icon="@drawable/d"
+                        android:title="Last Saved"
+                        app:showAsAction="never" />
+
+                    <item
+                        android:id="@+id/open_new"
+                        android:icon="@drawable/e"
+                        android:title="New File"
+                        app:showAsAction="never" />
+
+
+                </menu>
+            </item>
+
+            <item
+                android:title="Settings"
+                android:icon="@drawable/i"
+                android:id="@+id/app_settings"
+                app:showAsAction="never"/>
+
+        </menu>
+    </item>
+</menu>

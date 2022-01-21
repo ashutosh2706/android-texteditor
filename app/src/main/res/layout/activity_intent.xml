@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="5dp"
+    tools:context=".OpenNewFile">
+
+
+    <EditText
+        android:id="@+id/workspace"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:freezesText="true"
+        android:gravity="start"
+        android:hint="Empty"
+        android:inputType="textPersonName|textMultiLine"
+        android:scrollbars="vertical"
+        android:textColor="@color/colorFont"
+        android:textSize="18sp" />
+
+</LinearLayout>
