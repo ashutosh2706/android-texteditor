@@ -158,7 +158,7 @@ public class OpenNewFile extends AppCompatActivity {
                     String header = path.substring(path.lastIndexOf("/") + 1);
                     String ext = path.substring(path.lastIndexOf(".") + 1);
                     getSupportActionBar().setTitle(header);
-                    Toast.makeText(this, "" + ext, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, ext+" file", Toast.LENGTH_SHORT).show();
                     loadFile();
                 } else {
                     Toast.makeText(this, "java.lang.NullPointerException", Toast.LENGTH_SHORT).show();
