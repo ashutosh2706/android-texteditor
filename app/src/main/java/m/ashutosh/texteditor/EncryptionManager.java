@@ -26,8 +26,7 @@ public class EncryptionManager {
         cipher.init(Cipher.DECRYPT_MODE,keySpec);
         byte[] decryptionValue = Base64.decode(key,Base64.DEFAULT);
         byte[] value = cipher.doFinal(decryptionValue);
-        String decryptedValue = new String(value);
-        return decryptedValue;
+        return new String(value);
     }
 
     public SecretKeySpec generateKey(String password) throws Exception{
@@ -35,8 +34,7 @@ public class EncryptionManager {
         byte[] bytes = password.getBytes(StandardCharsets.UTF_8);
         digest.update(bytes,0,bytes.length);
         byte[] key = digest.digest();
-        SecretKeySpec secretKeySpec = new SecretKeySpec(key,"AES");
-        return secretKeySpec;
+        return new SecretKeySpec(key,"AES");
     }
 
 }

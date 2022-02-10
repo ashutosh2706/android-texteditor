@@ -72,49 +72,32 @@ public class MainActivity extends AppCompatActivity {
 
         int id = item.getItemId();
 
-        switch (id) {
+        if(id==R.id.save) {
+            if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                saveMethod();
+            }
+        }else if(id==R.id.open_last)
+            openLast();
+        else if(id==R.id.open_new)
+            startActivity(new Intent(MainActivity.this, OpenNewFile.class));
+        else if(id==R.id.app_settings)
+            startActivity(new Intent(MainActivity.this,SettingsActivity.class));
+        else if(id==R.id.encrypt)
+            encryptText();
+        else if(id == R.id.decrypt)
+            decryptText();
 
-            case R.id.save:
-                if(ContextCompat.checkSelfPermission(MainActivity.this,Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    saveMethod();
-                }
-                break;
-
-            case R.id.open_last:
-                openLast();
-                break;
-
-            case R.id.open_new:
-                startActivity(new Intent(MainActivity.this, OpenNewFile.class));
-                break;
-
-            case R.id.app_settings:
-                startActivity(new Intent(MainActivity.this,SettingsActivity.class));
-                break;
-
-            case R.id.encrypt:
-                encryptText();
-                break;
-
-            case R.id.decrypt:
-                decryptText();
-                break;
-
-            default:
-        }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-
         if (requestCode == 101) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
                 Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
                 finish();
             }
         }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
@@ -123,16 +106,12 @@ public class MainActivity extends AppCompatActivity {
             if (data != null) {
                 String path = data.getStringExtra(FilePickerActivity.RESULT_FILE_PATH);
                 decryptText2(path);
-            }else {
-                Toast.makeText(this, "java.lang.NullPointerException", Toast.LENGTH_SHORT).show();
             }
             super.onActivityResult(requestCode, resultCode, data);
         }else if(requestCode == CHOOSE_FILE_CODE_ENC && resultCode == Activity.RESULT_OK){
             if(data!=null) {
                 String path = data.getStringExtra(FilePickerActivity.RESULT_FILE_PATH);
                 encryptText2(path);
-            }else {
-                Toast.makeText(this, "java.lang.NullPointerException", Toast.LENGTH_SHORT).show();
             }
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -164,11 +143,10 @@ public class MainActivity extends AppCompatActivity {
             editor.putString(SHARED_FOLDER,tempFolder);
             editor.apply();
 
-            Toast.makeText(this, "Saved", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "File saved", Toast.LENGTH_LONG).show();
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(MainActivity.this, "java.lang.IOException", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(this, ""+e, Toast.LENGTH_LONG).show();
         }
 
     }
@@ -192,20 +170,18 @@ public class MainActivity extends AppCompatActivity {
                     fileOutputStream.close();
                     lastOpened = false;
 
-                    Toast.makeText(this, "Saved", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "File saved", Toast.LENGTH_LONG).show();
 
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Toast.makeText(MainActivity.this, "java.lang.IOException", Toast.LENGTH_SHORT).show();
+                }catch (Exception e) {
+                    Toast.makeText(this, "" + e, Toast.LENGTH_LONG).show();
                 }
-            }else {
-                Toast.makeText(this, "An Error Occurred", Toast.LENGTH_SHORT).show();
-            }
+            }else
+                Toast.makeText(this, "File not found", Toast.LENGTH_SHORT).show();
         }else {
 
-            if (TextUtils.isEmpty(editText.getText().toString().trim())) {
+            if (TextUtils.isEmpty(editText.getText().toString().trim()))
                 Toast.makeText(this, "¯\\_(ツ)_/¯", Toast.LENGTH_SHORT).show();
-            } else {
+            else {
 
                 View v = getLayoutInflater().inflate(R.layout.main_dialog, null);
                 EditText fileName = v.findViewById(R.id.dialog_filename);
@@ -228,9 +204,8 @@ public class MainActivity extends AppCompatActivity {
                                 File output = new File(dir, tempFilename0 + ".txt");
                                 saveEngine(output, tempFilename0, location);
 
-                            }else {
+                            }else
                                 Toast.makeText(MainActivity.this, "Enter Filename", Toast.LENGTH_LONG).show();
-                            }
                         }).setNegativeButton("cancel", (dialog, which) -> dialog.dismiss()).create().show();
             }
         }
@@ -249,11 +224,9 @@ public class MainActivity extends AppCompatActivity {
         File dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + folderName);
         File file = new File(dir,fileName);
 
-        if (!file.exists()) {
-
-            Toast.makeText(this, "Not found", Toast.LENGTH_LONG).show();
-
-        } else {
+        if (!file.exists())
+            Toast.makeText(this, "File not found", Toast.LENGTH_LONG).show();
+        else {
 
             String text;
 
@@ -267,9 +240,8 @@ public class MainActivity extends AppCompatActivity {
                 }
                 editText.setText(stringBuffer.toString());
                 lastOpened = true;
-            } catch (IOException e) {
-                e.printStackTrace();
-                Toast.makeText(this, "java.lang.IOException", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Toast.makeText(this, ""+e, Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -301,12 +273,11 @@ public class MainActivity extends AppCompatActivity {
                 }
                 encryptText3(stringBuffer.toString(),path);
 
-            } catch (IOException e) {
-                e.printStackTrace();
-                Toast.makeText(this, "java.lang.IOException", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Toast.makeText(this, ""+e, Toast.LENGTH_LONG).show();
             }
         }else {
-            Toast.makeText(this, "An Error Occurred", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "An error occurred", Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -326,29 +297,24 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             String key = encryptionManager.encrypt(data, passwordField.getText().toString());
                             keyOutput(key,filepath);
-                        } catch (Exception e) {
-                            Toast.makeText(MainActivity.this, "An Error Occurred", Toast.LENGTH_SHORT).show();
+                        }catch (Exception e) {
+                            Toast.makeText(this, ""+e, Toast.LENGTH_LONG).show();
                         }
                     }
                 }).setNegativeButton("cancel", (dialog, which) -> dialog.dismiss()).create().show();
 
     }
 
-    private void keyOutput(String key, String filepath) {
+    private void keyOutput(String key, String filepath) throws Exception{
 
         File output = new File(filepath + ".enc");
-        try {
-            FileOutputStream fos = new FileOutputStream(output);
-            fos.write(key.getBytes());
-            fos.close();
+        FileOutputStream fos = new FileOutputStream(output);
+        fos.write(key.getBytes());
+        fos.close();
+        Toast.makeText(MainActivity.this, "File Encrypted", Toast.LENGTH_LONG).show();
+        File temp = new File(filepath);
+        temp.delete();
 
-            Toast.makeText(MainActivity.this, "File Encrypted", Toast.LENGTH_LONG).show();
-            File temp = new File(filepath);
-            temp.delete();
-
-        } catch (IOException e) {
-            Toast.makeText(MainActivity.this, "java.lang.IOException", Toast.LENGTH_SHORT).show();
-        }
     }
 
     private void decryptText(){
@@ -382,13 +348,11 @@ public class MainActivity extends AppCompatActivity {
                 decryptText3(stringBuffer.toString(),path);
 
             } catch (IOException e) {
-                e.printStackTrace();
-                Toast.makeText(this, "java.lang.IOException", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, ""+e, Toast.LENGTH_LONG).show();
             }
 
-        }else {
-            Toast.makeText(this, "An Error Occurred", Toast.LENGTH_SHORT).show();
-        }
+        }else
+            Toast.makeText(this, "An error occurred", Toast.LENGTH_SHORT).show();
     }
 
     private void decryptText3(String key, String filepath){
@@ -402,9 +366,9 @@ public class MainActivity extends AppCompatActivity {
                 .setCancelable(false)
                 .setPositiveButton("ok", (dialog, which) -> {
 
-                    if(TextUtils.isEmpty(passwordField.getText().toString())){
+                    if(TextUtils.isEmpty(passwordField.getText().toString()))
                         Toast.makeText(MainActivity.this, "Enter Password", Toast.LENGTH_SHORT).show();
-                    }else {
+                    else {
                         encryptionManager = new EncryptionManager();
                         try {
                             String decryptedText = encryptionManager.decrypt(key,passwordField.getText().toString());
@@ -416,18 +380,13 @@ public class MainActivity extends AppCompatActivity {
                             }
 
                             File output = new File(file);
-                            try {
-                                FileOutputStream fos = new FileOutputStream(output);
-                                fos.write(decryptedText.getBytes());
-                                fos.close();
-                                editText.setText(decryptedText);
-                                File temp = new File(filepath);
-                                temp.delete();
-                                Toast.makeText(MainActivity.this, "File Decrypted", Toast.LENGTH_LONG).show();
-
-                            } catch (IOException e) {
-                                Toast.makeText(MainActivity.this, "java.lang.IOException", Toast.LENGTH_SHORT).show();
-                            }
+                            FileOutputStream fos = new FileOutputStream(output);
+                            fos.write(decryptedText.getBytes());
+                            fos.close();
+                            editText.setText(decryptedText);
+                            File temp = new File(filepath);
+                            temp.delete();
+                            Toast.makeText(MainActivity.this, "File Decrypted", Toast.LENGTH_LONG).show();
                         }catch (Exception e){
                             Toast.makeText(MainActivity.this, "Incorrect Password", Toast.LENGTH_LONG).show();
                         }

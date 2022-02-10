@@ -74,45 +74,41 @@ public class OpenNewFile extends AppCompatActivity {
                             if (a.contains("root")) {
                                 path = a.substring(5);
                                 loadFile();
-                            } else if (a.contains("home")) {
+                            }else if (a.contains("home")) {
                                 String c = a.substring(a.indexOf(":") + 1);
                                 path = "Documents/" + c;
                                 loadFile();
-                            } else {
+                            }else {
                                 path = a;
                                 loadFile();
                             }
 
-                        } else {
-                            Toast.makeText(this, "java.lang.NullPointerException", Toast.LENGTH_SHORT).show();
+                        }else {
+                            Toast.makeText(this, "Data error", Toast.LENGTH_SHORT).show();
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                 this.finishAndRemoveTask();
-                            } else {
+                            }else
                                 this.finish();
-                            }
                         }
-                    } else {
+                    }else {
                         Toast.makeText(this, "Invalid File", Toast.LENGTH_SHORT).show();
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             this.finishAndRemoveTask();
-                        } else {
+                        }else
                             this.finish();
-                        }
                     }
-                } else {
+                }else
                     init();
-                }
-            } else {
+
+            }else {
                 Toast.makeText(this, "Data error", Toast.LENGTH_SHORT).show();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     this.finishAndRemoveTask();
-                } else {
+                }else
                     this.finish();
-                }
             }
-        } else {
+        } else
             init();
-        }
     }
 
     @Override
@@ -136,13 +132,10 @@ public class OpenNewFile extends AppCompatActivity {
                     fileOutputStream.write(content.getBytes());
                     fileOutputStream.close();
 
-                    Toast.makeText(OpenNewFile.this, "Saved", Toast.LENGTH_LONG).show();
+                    Toast.makeText(OpenNewFile.this, "File saved", Toast.LENGTH_LONG).show();
 
-                } catch (IOException e) {
-                    e.printStackTrace();
-
-                    Toast.makeText(OpenNewFile.this, "java.lang.IOException", Toast.LENGTH_SHORT).show();
-
+                }catch (IOException e) {
+                    Toast.makeText(OpenNewFile.this, ""+e, Toast.LENGTH_LONG).show();
                 }
             }
         }
@@ -160,13 +153,10 @@ public class OpenNewFile extends AppCompatActivity {
                     getSupportActionBar().setTitle(header);
                     Toast.makeText(this, ext+" file", Toast.LENGTH_SHORT).show();
                     loadFile();
-                } else {
-                    Toast.makeText(this, "java.lang.NullPointerException", Toast.LENGTH_SHORT).show();
                 }
                 super.onActivityResult(requestCode, resultCode, data);
-            } else if (requestCode == 106 && resultCode == Activity.RESULT_CANCELED) {
+            } else if (requestCode == 106 && resultCode == Activity.RESULT_CANCELED)
                 this.finish();
-            }
         }
 
     @Override
@@ -194,11 +184,10 @@ public class OpenNewFile extends AppCompatActivity {
     private void loadFile () {
 
             String text;
-            if (path.contains("emulated")) {
+            if (path.contains("emulated"))
                 filePath = new File(path);
-            } else {
+            else
                 filePath = new File(Environment.getExternalStorageDirectory(), path);
-            }
 
             if (filePath.exists()) {
                 try {
@@ -212,12 +201,10 @@ public class OpenNewFile extends AppCompatActivity {
                     editText.setText(stringBuffer.toString());
                     noFileChosen = false;
                 } catch (IOException e) {
-                    e.printStackTrace();
-                    Toast.makeText(this, "java.lang.IOException", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, ""+e, Toast.LENGTH_LONG).show();
                 }
-            } else {
+            }else
                 Toast.makeText(this, "path error: " + filePath.toString(), Toast.LENGTH_LONG).show();
-            }
 
         }
 
@@ -234,9 +221,8 @@ public class OpenNewFile extends AppCompatActivity {
                         .withRequestCode(106).start();
                 noFileChosen = true;
 
-            } else {
+            }else
                 ActivityCompat.requestPermissions(OpenNewFile.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 105);
-            }
         }
 
     private void setTheme () {
