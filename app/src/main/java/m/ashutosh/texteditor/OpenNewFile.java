@@ -20,7 +20,6 @@ import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.nbsp.materialfilepicker.MaterialFilePicker;
 import com.nbsp.materialfilepicker.ui.FilePickerActivity;
@@ -32,6 +31,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.regex.Pattern;
+
+import m.ashutosh.toastertoast.Toaster;
 
 import static m.ashutosh.texteditor.MainActivity.DEFAULT_LOCATION;
 
@@ -84,14 +85,14 @@ public class OpenNewFile extends AppCompatActivity {
                             }
 
                         }else {
-                            Toast.makeText(this, "Data error", Toast.LENGTH_SHORT).show();
+                            Toaster.makeToast(OpenNewFile.this,"Data error",Toaster.LENGTH_LONG,Toaster.ERROR);
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                 this.finishAndRemoveTask();
                             }else
                                 this.finish();
                         }
                     }else {
-                        Toast.makeText(this, "Invalid File", Toast.LENGTH_SHORT).show();
+                        Toaster.makeToast(OpenNewFile.this,"Invalid File",Toaster.LENGTH_SHORT,Toaster.DEFAULT);
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             this.finishAndRemoveTask();
                         }else
@@ -101,7 +102,7 @@ public class OpenNewFile extends AppCompatActivity {
                     init();
 
             }else {
-                Toast.makeText(this, "Data error", Toast.LENGTH_SHORT).show();
+                Toaster.makeToast(OpenNewFile.this,"Data error",Toaster.LENGTH_SHORT,Toaster.ERROR);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     this.finishAndRemoveTask();
                 }else
@@ -132,10 +133,10 @@ public class OpenNewFile extends AppCompatActivity {
                     fileOutputStream.write(content.getBytes());
                     fileOutputStream.close();
 
-                    Toast.makeText(OpenNewFile.this, "File saved", Toast.LENGTH_LONG).show();
+                    Toaster.makeToast(OpenNewFile.this,"File saved",Toaster.LENGTH_LONG,Toaster.SUCCESS);
 
                 }catch (IOException e) {
-                    Toast.makeText(OpenNewFile.this, ""+e, Toast.LENGTH_LONG).show();
+                    Toaster.makeToast(OpenNewFile.this,""+e,Toaster.LENGTH_LONG,Toaster.ERROR);
                 }
             }
         }
@@ -151,7 +152,7 @@ public class OpenNewFile extends AppCompatActivity {
                     String header = path.substring(path.lastIndexOf("/") + 1);
                     String ext = path.substring(path.lastIndexOf(".") + 1);
                     getSupportActionBar().setTitle(header);
-                    Toast.makeText(this, ext+" file", Toast.LENGTH_SHORT).show();
+                    Toaster.makeToast(OpenNewFile.this,ext+" file",Toaster.LENGTH_SHORT,Toaster.DEFAULT);
                     loadFile();
                 }
                 super.onActivityResult(requestCode, resultCode, data);
@@ -174,7 +175,7 @@ public class OpenNewFile extends AppCompatActivity {
                     noFileChosen = true;
 
                 } else {
-                    Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
+                    Toaster.makeToast(OpenNewFile.this,"Permission Denied",Toaster.LENGTH_SHORT,Toaster.ERROR);
                     finish();
                 }
             }
@@ -201,10 +202,10 @@ public class OpenNewFile extends AppCompatActivity {
                     editText.setText(stringBuffer.toString());
                     noFileChosen = false;
                 } catch (IOException e) {
-                    Toast.makeText(this, ""+e, Toast.LENGTH_LONG).show();
+                    Toaster.makeToast(OpenNewFile.this,""+e,Toaster.LENGTH_LONG,Toaster.ERROR);
                 }
             }else
-                Toast.makeText(this, "path error: " + filePath.toString(), Toast.LENGTH_LONG).show();
+                Toaster.makeToast(OpenNewFile.this,"Path not found:\n"+filePath.toString(),Toaster.LENGTH_LONG,Toaster.DEFAULT);
 
         }
 

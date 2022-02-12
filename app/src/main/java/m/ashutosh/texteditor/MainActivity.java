@@ -34,6 +34,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.regex.Pattern;
 
+import m.ashutosh.toastertoast.Toaster;
+
 public class MainActivity extends AppCompatActivity {
 
     private EditText editText;
@@ -56,9 +58,8 @@ public class MainActivity extends AppCompatActivity {
 
         editText = findViewById(R.id.editText);
 
-        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED)
             requestPerm();
-        }
     }
 
     @Override
@@ -94,10 +95,11 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == 101) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
+                Toaster.makeToast(MainActivity.this,"Permission Denied",Toaster.LENGTH_SHORT,Toaster.ERROR);
                 finish();
             }
         }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
@@ -143,10 +145,10 @@ public class MainActivity extends AppCompatActivity {
             editor.putString(SHARED_FOLDER,tempFolder);
             editor.apply();
 
-            Toast.makeText(this, "File saved", Toast.LENGTH_LONG).show();
+            Toaster.makeToast(MainActivity.this,"File Saved",Toaster.LENGTH_LONG,Toaster.SUCCESS);
 
         } catch (Exception e) {
-            Toast.makeText(this, ""+e, Toast.LENGTH_LONG).show();
+            Toaster.makeToast(MainActivity.this,""+e,Toaster.LENGTH_SHORT,Toaster.ERROR);
         }
 
     }
@@ -170,17 +172,17 @@ public class MainActivity extends AppCompatActivity {
                     fileOutputStream.close();
                     lastOpened = false;
 
-                    Toast.makeText(this, "File saved", Toast.LENGTH_LONG).show();
+                    Toaster.makeToast(MainActivity.this,"File Saved",Toaster.LENGTH_LONG,Toaster.SUCCESS);
 
                 }catch (Exception e) {
-                    Toast.makeText(this, "" + e, Toast.LENGTH_LONG).show();
+                    Toaster.makeToast(MainActivity.this,""+e,Toaster.LENGTH_SHORT,Toaster.ERROR);
                 }
             }else
-                Toast.makeText(this, "File not found", Toast.LENGTH_SHORT).show();
+                Toaster.makeToast(MainActivity.this,"File not found",Toaster.LENGTH_SHORT,Toaster.ERROR);
         }else {
 
             if (TextUtils.isEmpty(editText.getText().toString().trim()))
-                Toast.makeText(this, "¯\\_(ツ)_/¯", Toast.LENGTH_SHORT).show();
+                Toaster.makeToast(MainActivity.this,"¯\\_(ツ)_/¯",Toaster.LENGTH_SHORT,Toaster.DEFAULT);
             else {
 
                 View v = getLayoutInflater().inflate(R.layout.main_dialog, null);
@@ -205,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
                                 saveEngine(output, tempFilename0, location);
 
                             }else
-                                Toast.makeText(MainActivity.this, "Enter Filename", Toast.LENGTH_LONG).show();
+                                Toaster.makeToast(MainActivity.this,"Enter Filename",Toaster.LENGTH_SHORT,Toaster.DEFAULT);
                         }).setNegativeButton("cancel", (dialog, which) -> dialog.dismiss()).create().show();
             }
         }
@@ -225,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
         File file = new File(dir,fileName);
 
         if (!file.exists())
-            Toast.makeText(this, "File not found", Toast.LENGTH_LONG).show();
+            Toaster.makeToast(MainActivity.this,"File not found",Toaster.LENGTH_SHORT,Toaster.ERROR);
         else {
 
             String text;
@@ -241,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
                 editText.setText(stringBuffer.toString());
                 lastOpened = true;
             } catch (Exception e) {
-                Toast.makeText(this, ""+e, Toast.LENGTH_LONG).show();
+                Toaster.makeToast(MainActivity.this,""+e,Toaster.LENGTH_SHORT,Toaster.ERROR);
             }
         }
     }
@@ -274,10 +276,10 @@ public class MainActivity extends AppCompatActivity {
                 encryptText3(stringBuffer.toString(),path);
 
             } catch (Exception e) {
-                Toast.makeText(this, ""+e, Toast.LENGTH_LONG).show();
+                Toaster.makeToast(MainActivity.this,""+e,Toaster.LENGTH_SHORT,Toaster.ERROR);
             }
         }else {
-            Toast.makeText(this, "An error occurred", Toast.LENGTH_SHORT).show();
+            Toaster.makeToast(MainActivity.this,"An error occurred",Toaster.LENGTH_SHORT,Toaster.ERROR);
         }
 
     }
@@ -298,7 +300,7 @@ public class MainActivity extends AppCompatActivity {
                             String key = encryptionManager.encrypt(data, passwordField.getText().toString());
                             keyOutput(key,filepath);
                         }catch (Exception e) {
-                            Toast.makeText(this, ""+e, Toast.LENGTH_LONG).show();
+                            Toaster.makeToast(MainActivity.this,""+e,Toaster.LENGTH_SHORT,Toaster.ERROR);
                         }
                     }
                 }).setNegativeButton("cancel", (dialog, which) -> dialog.dismiss()).create().show();
@@ -311,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
         FileOutputStream fos = new FileOutputStream(output);
         fos.write(key.getBytes());
         fos.close();
-        Toast.makeText(MainActivity.this, "File Encrypted", Toast.LENGTH_LONG).show();
+        Toaster.makeToast(MainActivity.this,"File Encrypted",Toaster.LENGTH_LONG,Toaster.SUCCESS);
         File temp = new File(filepath);
         temp.delete();
 
@@ -348,11 +350,11 @@ public class MainActivity extends AppCompatActivity {
                 decryptText3(stringBuffer.toString(),path);
 
             } catch (IOException e) {
-                Toast.makeText(this, ""+e, Toast.LENGTH_LONG).show();
+                Toaster.makeToast(MainActivity.this,""+e,Toaster.LENGTH_SHORT,Toaster.ERROR);
             }
 
         }else
-            Toast.makeText(this, "An error occurred", Toast.LENGTH_SHORT).show();
+            Toaster.makeToast(MainActivity.this,"An error occurred",Toaster.LENGTH_SHORT,Toaster.ERROR);
     }
 
     private void decryptText3(String key, String filepath){
@@ -367,7 +369,7 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("ok", (dialog, which) -> {
 
                     if(TextUtils.isEmpty(passwordField.getText().toString()))
-                        Toast.makeText(MainActivity.this, "Enter Password", Toast.LENGTH_SHORT).show();
+                        Toaster.makeToast(MainActivity.this,"Enter Password",Toaster.LENGTH_SHORT,Toaster.DEFAULT);
                     else {
                         encryptionManager = new EncryptionManager();
                         try {
@@ -386,9 +388,9 @@ public class MainActivity extends AppCompatActivity {
                             editText.setText(decryptedText);
                             File temp = new File(filepath);
                             temp.delete();
-                            Toast.makeText(MainActivity.this, "File Decrypted", Toast.LENGTH_LONG).show();
+                            Toaster.makeToast(MainActivity.this,"File Decrypted",Toaster.LENGTH_LONG,Toaster.SUCCESS);
                         }catch (Exception e){
-                            Toast.makeText(MainActivity.this, "Incorrect Password", Toast.LENGTH_LONG).show();
+                            Toaster.makeToast(MainActivity.this,"Incorrect Password",Toaster.LENGTH_LONG,Toaster.ERROR);
                         }
                     }
                 }).setNegativeButton("cancel", (dialog, which) -> dialog.dismiss()).create().show();
