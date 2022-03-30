@@ -8,14 +8,6 @@
             android:key="theme"
             android:title="Dark Theme"
             android:icon="@drawable/j" />
-
-        <EditTextPreference
-            android:key="dirName"
-            android:defaultValue="Documents/Text Editor"
-            android:title="Folder Path"
-            app:useSimpleSummaryProvider="true"
-            android:icon="@drawable/c" />
-
     </PreferenceCategory>
 
 </PreferenceScreen>

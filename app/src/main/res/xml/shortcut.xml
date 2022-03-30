@@ -11,7 +11,7 @@
         <intent
             android:action="android.intent.action.VIEW"
             android:targetPackage="m.ashutosh.texteditor"
-            android:targetClass="m.ashutosh.texteditor.OpenNewFile"/>
+            android:targetClass="m.ashutosh.texteditor.OpenFile"/>
     </shortcut>
 
 </shortcuts>

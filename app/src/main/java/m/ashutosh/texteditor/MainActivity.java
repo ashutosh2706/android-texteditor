@@ -30,7 +30,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.regex.Pattern;
 
@@ -42,13 +41,11 @@ public class MainActivity extends AppCompatActivity {
     private long time;
     private Boolean lastOpened = false;
     private static final String SHARED_PREFS = "preferences";
-    private static final String SHARED_FILENAME = "shared_filename";
-    private static final String SHARED_FOLDER = "shared_folder";
+    private static final String SHARED_FILENAME = "filename";
     public static final String DEFAULT_LOCATION = "Documents/Text Editor";
-    private final int CHOOSE_FILE_CODE = 191;
+    private final int CHOOSE_FILE_CODE_DEC = 191;
     private final int CHOOSE_FILE_CODE_ENC = 181;
     private Toast backToast;
-    EncryptionManager encryptionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         editText = findViewById(R.id.editText);
 
         if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED)
-            requestPerm();
+            ActivityCompat.requestPermissions(MainActivity.this,new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE},101);
     }
 
     @Override
@@ -74,19 +71,31 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if(id==R.id.save) {
-            if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                saveMethod();
-            }
+            saveMeth();
         }else if(id==R.id.open_last)
             openLast();
         else if(id==R.id.open_new)
-            startActivity(new Intent(MainActivity.this, OpenNewFile.class));
+            startActivity(new Intent(MainActivity.this, OpenFile.class));
         else if(id==R.id.app_settings)
             startActivity(new Intent(MainActivity.this,SettingsActivity.class));
-        else if(id==R.id.encrypt)
-            encryptText();
-        else if(id == R.id.decrypt)
-            decryptText();
+        else if(id==R.id.encrypt) {
+            MaterialFilePicker materialFilePicker = new MaterialFilePicker();
+            materialFilePicker.withActivity(MainActivity.this);
+            materialFilePicker.withCloseMenu(true).withPath(Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+DEFAULT_LOCATION)
+                    .withRootPath(Environment.getExternalStorageDirectory().getAbsolutePath()).withHiddenFiles(false)
+                    .withFilter(Pattern.compile(".*\\.(txt)$")).withFilterDirectories(false)
+                    .withTitle("Choose File")
+                    .withRequestCode(CHOOSE_FILE_CODE_ENC).start();
+        }
+        else if(id == R.id.decrypt) {
+            MaterialFilePicker materialFilePicker = new MaterialFilePicker();
+            materialFilePicker.withActivity(MainActivity.this);
+            materialFilePicker.withCloseMenu(true).withPath(Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+DEFAULT_LOCATION)
+                    .withRootPath(Environment.getExternalStorageDirectory().getAbsolutePath()).withHiddenFiles(false)
+                    .withFilter(Pattern.compile(".*\\.(enc)$")).withFilterDirectories(false)
+                    .withTitle("Choose File")
+                    .withRequestCode(CHOOSE_FILE_CODE_DEC).start();
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -104,16 +113,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if(requestCode == CHOOSE_FILE_CODE && resultCode == Activity.RESULT_OK){
+        if(requestCode == CHOOSE_FILE_CODE_DEC && resultCode == Activity.RESULT_OK){
             if (data != null) {
-                String path = data.getStringExtra(FilePickerActivity.RESULT_FILE_PATH);
-                decryptText2(path);
+                decryptText(data.getStringExtra(FilePickerActivity.RESULT_FILE_PATH));
             }
             super.onActivityResult(requestCode, resultCode, data);
         }else if(requestCode == CHOOSE_FILE_CODE_ENC && resultCode == Activity.RESULT_OK){
             if(data!=null) {
-                String path = data.getStringExtra(FilePickerActivity.RESULT_FILE_PATH);
-                encryptText2(path);
+                encryptText(data.getStringExtra(FilePickerActivity.RESULT_FILE_PATH));
             }
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -132,17 +139,15 @@ public class MainActivity extends AppCompatActivity {
         time = System.currentTimeMillis();
     }
 
-    private void saveEngine(File output, String tempFile, String tempFolder) {
+    private void saveFile(File output, String tempFile) {
 
         try {
             FileOutputStream fileOutputStream = new FileOutputStream(output);
             fileOutputStream.write(editText.getText().toString().getBytes());
             fileOutputStream.close();
 
-            SharedPreferences preferences = getSharedPreferences(SHARED_PREFS,MODE_PRIVATE);
-            SharedPreferences.Editor editor = preferences.edit();
+            SharedPreferences.Editor editor = getSharedPreferences(SHARED_PREFS,MODE_PRIVATE).edit();
             editor.putString(SHARED_FILENAME,tempFile + ".txt");
-            editor.putString(SHARED_FOLDER,tempFolder);
             editor.apply();
 
             Toaster.makeToast(MainActivity.this,"File Saved",Toaster.LENGTH_LONG,Toaster.SUCCESS);
@@ -153,14 +158,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void saveMethod(){
+    private void saveMeth(){
 
         if(lastOpened){
 
             SharedPreferences preferences = getSharedPreferences(SHARED_PREFS,MODE_PRIVATE);
             String filename = preferences.getString(SHARED_FILENAME,"$&$");
-            String folderName = preferences.getString(SHARED_FOLDER,DEFAULT_LOCATION);
-            File dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + folderName);
+            File dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + DEFAULT_LOCATION);
             File file = new File(dir,filename);
 
             if(file.exists()){
@@ -181,9 +185,7 @@ public class MainActivity extends AppCompatActivity {
                 Toaster.makeToast(MainActivity.this,"File not found",Toaster.LENGTH_SHORT,Toaster.ERROR);
         }else {
 
-            if (TextUtils.isEmpty(editText.getText().toString().trim()))
-                Toaster.makeToast(MainActivity.this,"¯\\_(ツ)_/¯",Toaster.LENGTH_SHORT,Toaster.DEFAULT);
-            else {
+            if (!TextUtils.isEmpty(editText.getText().toString().trim())) {
 
                 View v = getLayoutInflater().inflate(R.layout.main_dialog, null);
                 EditText fileName = v.findViewById(R.id.dialog_filename);
@@ -197,45 +199,34 @@ public class MainActivity extends AppCompatActivity {
                             String tempFilename0 = fileName.getText().toString();
                             if (!(TextUtils.isEmpty(fileName.getText().toString().trim()))) {
 
-                                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-                                String location = preferences.getString("dirName", "Documents/Text Editor");
-                                File dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + location);
+                                File dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + DEFAULT_LOCATION);
                                 if (!dir.exists()) {
                                     dir.mkdirs();
                                 }
                                 File output = new File(dir, tempFilename0 + ".txt");
-                                saveEngine(output, tempFilename0, location);
-
+                                saveFile(output, tempFilename0);
                             }else
                                 Toaster.makeToast(MainActivity.this,"Enter Filename",Toaster.LENGTH_SHORT,Toaster.DEFAULT);
+
                         }).setNegativeButton("cancel", (dialog, which) -> dialog.dismiss()).create().show();
             }
         }
     }
 
-    private void requestPerm() {
-
-        ActivityCompat.requestPermissions(MainActivity.this,new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE},101);
-    }
-    
     private void openLast() {
 
         SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS,MODE_PRIVATE);
         String fileName = sharedPreferences.getString(SHARED_FILENAME,"$&$");
-        String folderName = sharedPreferences.getString(SHARED_FOLDER,DEFAULT_LOCATION);
-        File dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + folderName);
+        File dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + DEFAULT_LOCATION);
         File file = new File(dir,fileName);
 
         if (!file.exists())
             Toaster.makeToast(MainActivity.this,"File not found",Toaster.LENGTH_SHORT,Toaster.ERROR);
         else {
-
             String text;
-
             try {
                 FileInputStream fileInputStream = new FileInputStream(file);
-                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
                 StringBuffer stringBuffer = new StringBuffer();
                 while ((text = bufferedReader.readLine()) != null) {
                     stringBuffer.append(text + "\n");
@@ -248,116 +239,26 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void encryptText() {
-
-        MaterialFilePicker materialFilePicker = new MaterialFilePicker();
-        materialFilePicker.withActivity(MainActivity.this);
-        materialFilePicker.withCloseMenu(true).withPath(Environment.getExternalStorageDirectory().getAbsolutePath())
-                .withRootPath(Environment.getExternalStorageDirectory().getAbsolutePath()).withHiddenFiles(false)
-                .withFilter(Pattern.compile(".*\\.(txt)$")).withFilterDirectories(false)
-                .withTitle("Choose File")
-                .withRequestCode(CHOOSE_FILE_CODE_ENC).start();
-    }
-
-    private void encryptText2(String path) {
-        File file = new File(path);
-        if(file.exists()){
-
-            String text;
-
-            try {
-                FileInputStream fileInputStream = new FileInputStream(file);
-                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                StringBuffer stringBuffer = new StringBuffer();
-                while ((text = bufferedReader.readLine()) != null) {
-                    stringBuffer.append(text + "\n");
-                }
-                encryptText3(stringBuffer.toString(),path);
-
-            } catch (Exception e) {
-                Toaster.makeToast(MainActivity.this,""+e,Toaster.LENGTH_SHORT,Toaster.ERROR);
-            }
-        }else {
-            Toaster.makeToast(MainActivity.this,"An error occurred",Toaster.LENGTH_SHORT,Toaster.ERROR);
-        }
-
-    }
-
-    private void encryptText3(String data, String filepath){
-        View v = getLayoutInflater().inflate(R.layout.enc_dialog, null);
-        EditText passwordField = v.findViewById(R.id.dialog_enc);
+    private void encryptText(String path) {
+        View view = getLayoutInflater().inflate(R.layout.enc_dialog,null);
+        EditText passwordField = view.findViewById(R.id.dialog_enc);
 
         new AlertDialog.Builder(MainActivity.this)
                 .setTitle("Enter Password")
-                .setView(v)
+                .setView(view)
                 .setCancelable(false)
                 .setPositiveButton("ok", (dialog, which) -> {
 
-                    if (!(TextUtils.isEmpty(passwordField.getText().toString()))) {
-                        encryptionManager = new EncryptionManager();
-                        try {
-                            String key = encryptionManager.encrypt(data, passwordField.getText().toString());
-                            keyOutput(key,filepath);
-                        }catch (Exception e) {
-                            Toaster.makeToast(MainActivity.this,""+e,Toaster.LENGTH_SHORT,Toaster.ERROR);
-                        }
-                    }
+                    if(TextUtils.isEmpty(passwordField.getText().toString()))
+                        Toaster.makeToast(MainActivity.this,"Enter Password",Toaster.LENGTH_SHORT,Toaster.DEFAULT);
+                    else
+                        new EncryptUtil(MainActivity.this).encryptFile(path,passwordField.getText().toString());
+
                 }).setNegativeButton("cancel", (dialog, which) -> dialog.dismiss()).create().show();
 
     }
 
-    private void keyOutput(String key, String filepath) throws Exception{
-
-        File output = new File(filepath + ".enc");
-        FileOutputStream fos = new FileOutputStream(output);
-        fos.write(key.getBytes());
-        fos.close();
-        Toaster.makeToast(MainActivity.this,"File Encrypted",Toaster.LENGTH_LONG,Toaster.SUCCESS);
-        File temp = new File(filepath);
-        temp.delete();
-
-    }
-
-    private void decryptText(){
-
-        MaterialFilePicker materialFilePicker = new MaterialFilePicker();
-        materialFilePicker.withActivity(MainActivity.this);
-        materialFilePicker.withCloseMenu(true).withPath(Environment.getExternalStorageDirectory().getAbsolutePath())
-                .withRootPath(Environment.getExternalStorageDirectory().getAbsolutePath()).withHiddenFiles(false)
-                .withFilter(Pattern.compile(".*\\.(enc)$")).withFilterDirectories(false)
-                .withTitle("Choose File")
-                .withRequestCode(CHOOSE_FILE_CODE).start();
-
-    }
-
-    private void decryptText2(String path){
-
-        File file = new File(path);
-        if(file.exists()){
-
-            String text;
-
-            try {
-                FileInputStream fileInputStream = new FileInputStream(file);
-                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                StringBuffer stringBuffer = new StringBuffer();
-                while ((text = bufferedReader.readLine()) != null) {
-                    stringBuffer.append(text + "\n");
-                }
-
-                decryptText3(stringBuffer.toString(),path);
-
-            } catch (IOException e) {
-                Toaster.makeToast(MainActivity.this,""+e,Toaster.LENGTH_SHORT,Toaster.ERROR);
-            }
-
-        }else
-            Toaster.makeToast(MainActivity.this,"An error occurred",Toaster.LENGTH_SHORT,Toaster.ERROR);
-    }
-
-    private void decryptText3(String key, String filepath){
+    private void decryptText(String path){
 
         View view = getLayoutInflater().inflate(R.layout.enc_dialog,null);
         EditText passwordField = view.findViewById(R.id.dialog_enc);
@@ -370,31 +271,10 @@ public class MainActivity extends AppCompatActivity {
 
                     if(TextUtils.isEmpty(passwordField.getText().toString()))
                         Toaster.makeToast(MainActivity.this,"Enter Password",Toaster.LENGTH_SHORT,Toaster.DEFAULT);
-                    else {
-                        encryptionManager = new EncryptionManager();
-                        try {
-                            String decryptedText = encryptionManager.decrypt(key,passwordField.getText().toString());
-                            String file = filepath;
-                            if(filepath.contains(".txt.enc")) {
-                                file = filepath.replace(".txt.enc",".txt");
-                            }else if(filepath.contains(".enc")) {
-                                file = filepath.replace(".enc",".txt");
-                            }
+                    else
+                        new DecryptUtil(MainActivity.this).decryptFile(path,passwordField.getText().toString(),editText);
 
-                            File output = new File(file);
-                            FileOutputStream fos = new FileOutputStream(output);
-                            fos.write(decryptedText.getBytes());
-                            fos.close();
-                            editText.setText(decryptedText);
-                            File temp = new File(filepath);
-                            temp.delete();
-                            Toaster.makeToast(MainActivity.this,"File Decrypted",Toaster.LENGTH_LONG,Toaster.SUCCESS);
-                        }catch (Exception e){
-                            Toaster.makeToast(MainActivity.this,"Incorrect Password",Toaster.LENGTH_LONG,Toaster.ERROR);
-                        }
-                    }
                 }).setNegativeButton("cancel", (dialog, which) -> dialog.dismiss()).create().show();
-
 
     }
 

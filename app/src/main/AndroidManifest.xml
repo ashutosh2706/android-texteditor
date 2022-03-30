@@ -30,7 +30,7 @@
             android:label="Settings"
             android:parentActivityName=".MainActivity" />
         <activity
-            android:name=".OpenNewFile"
+            android:name=".OpenFile"
             android:configChanges="orientation|screenSize|keyboard|keyboardHidden"
             android:parentActivityName=".MainActivity">
             <intent-filter>
