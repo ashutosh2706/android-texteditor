@@ -14,15 +14,10 @@
         android:ems="10"
         android:freezesText="true"
         android:gravity="start"
-        android:hint="Write Here.."
+        android:hint="Write something..."
         android:inputType="textPersonName|textMultiLine"
         android:scrollbars="vertical"
         android:textColor="@color/colorFont"
         android:textSize="18sp" />
-
-    <!--For Relative Layout-->
-    <!--android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"-->
 
 </LinearLayout>

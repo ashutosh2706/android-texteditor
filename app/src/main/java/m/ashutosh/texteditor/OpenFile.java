@@ -10,6 +10,8 @@ import androidx.preference.PreferenceManager;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -57,14 +59,7 @@ public class OpenFile extends AppCompatActivity {
                 openIntentFile(intent.getData());
 
             } else {
-                MaterialFilePicker materialFilePicker = new MaterialFilePicker();
-                materialFilePicker.withActivity(OpenFile.this);
-                materialFilePicker.withCloseMenu(true).withPath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + DEFAULT_LOCATION)
-                        .withRootPath(Environment.getExternalStorageDirectory().getAbsolutePath()).withHiddenFiles(false)
-                        .withFilter(Pattern.compile(".*\\.(txt|enc|xml|properties|html|java|py|cpp|c|log|md|h|conf|config|cfg)$")).withFilterDirectories(false)
-                        .withTitle("Choose File")
-                        .withRequestCode(106).start();
-                noFileChosen = true;
+                initActivity();
             }
 
         }else
@@ -123,16 +118,7 @@ public class OpenFile extends AppCompatActivity {
     public void onRequestPermissionsResult ( int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults){
             if (requestCode == 105) {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    MaterialFilePicker materialFilePicker = new MaterialFilePicker();
-                    materialFilePicker.withActivity(OpenFile.this);
-                    materialFilePicker.withCloseMenu(true).withPath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + DEFAULT_LOCATION)
-                            .withRootPath(Environment.getExternalStorageDirectory().getAbsolutePath()).withHiddenFiles(false)
-                            .withFilter(Pattern.compile(".*\\.(txt|enc|xml|properties|html|java|py|cpp|c|log|md|h|conf|config|cfg)$")).withFilterDirectories(false)
-                            .withTitle("Choose File")
-                            .withRequestCode(106).start();
-                    noFileChosen = true;
-
+                    initActivity();
                 } else {
                     Toaster.makeToast(OpenFile.this,"Permission Denied",Toaster.LENGTH_SHORT,Toaster.ERROR);
                     finish();
@@ -176,7 +162,28 @@ public class OpenFile extends AppCompatActivity {
     }
 
     private void openIntentFile(Uri uri) {
-        Toaster.makeToast(this,"Under development\nWill be back soon :)",Toaster.LENGTH_SHORT,Toaster.DEFAULT);
-        editText.setText(uri.getPath());
+        Toaster.makeToast(this,""+uri.getEncodedPath(),Toaster.LENGTH_SHORT,Toaster.DEFAULT);
+        new AlertDialog.Builder(this)
+                .setCancelable(false)
+                .setTitle("Notice")
+                .setMessage("Due to new scoped storage policy of android 11, reading files from outside of documents folder is somewhat difficult. But don't worry this feature will be back soon.\nFor now choose files from here :)")
+                .setPositiveButton("ok, i understand", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                        initActivity();
+                    }
+                }).create().show();
+    }
+
+    private void initActivity() {
+        MaterialFilePicker materialFilePicker = new MaterialFilePicker();
+        materialFilePicker.withActivity(OpenFile.this);
+        materialFilePicker.withCloseMenu(true).withPath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + DEFAULT_LOCATION)
+                .withRootPath(Environment.getExternalStorageDirectory().getAbsolutePath()).withHiddenFiles(false)
+                .withFilter(Pattern.compile(".*\\.(txt|enc|xml|properties|html|java|py|cpp|c|log|md|h|conf|config|cfg)$")).withFilterDirectories(false)
+                .withTitle("Choose File")
+                .withRequestCode(106).start();
+        noFileChosen = true;
     }
 }

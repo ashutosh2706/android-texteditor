@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import m.ashutosh.textencryptor_lib.Encryptor;
 import m.ashutosh.toastertoast.Toaster;
 
 public class DecryptUtil {
@@ -51,7 +52,7 @@ public class DecryptUtil {
     private void decryptText(String key, EditText editText) {
 
         try {
-            String plainText = new EncryptionManager().decrypt(key, password);
+            String plainText = Encryptor.decrypt(key, password);
 
             String file = filePath;
             if(filePath.contains(".txt.enc")) {
@@ -65,6 +66,7 @@ public class DecryptUtil {
             fos.close();
 
             editText.setText(plainText);
+            Toaster.makeToast(context,"File Decrypted",Toaster.LENGTH_SHORT,Toaster.SUCCESS);
 
             if(!(new File(filePath).delete()))
                 Toaster.makeToast(context,"File Error",Toaster.LENGTH_SHORT,Toaster.DEFAULT);

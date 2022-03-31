@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 
+import m.ashutosh.textencryptor_lib.Encryptor;
 import m.ashutosh.toastertoast.Toaster;
 
 public class EncryptUtil {
@@ -48,7 +49,7 @@ public class EncryptUtil {
 
         try {
 
-            String key = new EncryptionManager().encrypt(data, password);
+            String key = Encryptor.encrypt(data, password);
             File output = new File(filePath + ".enc");
             FileOutputStream fos = new FileOutputStream(output);
             fos.write(key.getBytes());
