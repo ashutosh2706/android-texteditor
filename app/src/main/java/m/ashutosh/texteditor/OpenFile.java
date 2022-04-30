@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.Menu;
@@ -160,12 +161,12 @@ public class OpenFile extends AppCompatActivity {
     }
 
     private void openIntentFile(Uri uri) {
-        Toaster.makeToast(this,""+uri.getEncodedPath(),Toaster.LENGTH_SHORT,Toaster.DEFAULT);
+        Toaster.makeToast(this, "" + new UriHelper().getPath(uri), Toaster.LENGTH_LONG, Toaster.DEFAULT);
         new AlertDialog.Builder(this)
                 .setCancelable(false)
                 .setTitle("Notice")
-                .setMessage("Due to new scoped storage policy of android 11, accessing files from outside of app folder is restricted.\nOnly files inside 'TextEditor' folder can be opened")
-                .setPositiveButton("ok, i understand", new DialogInterface.OnClickListener() {
+                .setMessage("Due to new scoped storage policy of android 11, accessing files from outside of app folder is restricted.\nOnly files inside 'Text Editor' folder can be opened")
+                .setPositiveButton("okay", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();
@@ -175,13 +176,25 @@ public class OpenFile extends AppCompatActivity {
     }
 
     private void initActivity() {
-        MaterialFilePicker materialFilePicker = new MaterialFilePicker();
-        materialFilePicker.withActivity(OpenFile.this);
-        materialFilePicker.withCloseMenu(true).withPath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + DEFAULT_LOCATION)
-                .withRootPath(Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+DEFAULT_LOCATION).withHiddenFiles(false)
-                .withFilter(Pattern.compile(".*\\.(txt|enc|xml|properties|html|java|py|cpp|c|log|md|h|conf|config|cfg)$")).withFilterDirectories(false)
-                .withTitle("Choose File")
-                .withRequestCode(106).start();
-        noFileChosen = true;
+
+        if(Build.VERSION.SDK_INT == Build.VERSION_CODES.R) {
+            MaterialFilePicker materialFilePicker = new MaterialFilePicker();
+            materialFilePicker.withActivity(OpenFile.this);
+            materialFilePicker.withCloseMenu(false).withPath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + DEFAULT_LOCATION)
+                    .withRootPath(Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+DEFAULT_LOCATION).withHiddenFiles(false)
+                    .withFilter(Pattern.compile(".*\\.(txt|enc|xml|properties|html|java|py|cpp|c|log|md|h|conf|config|cfg)$")).withFilterDirectories(false)
+                    .withTitle("Choose File")
+                    .withRequestCode(106).start();
+            noFileChosen = true;
+        }else {
+            MaterialFilePicker materialFilePicker = new MaterialFilePicker();
+            materialFilePicker.withActivity(OpenFile.this);
+            materialFilePicker.withCloseMenu(false).withPath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + DEFAULT_LOCATION)
+                    .withRootPath(Environment.getExternalStorageDirectory().getAbsolutePath()).withHiddenFiles(false)
+                    .withFilter(Pattern.compile(".*\\.(txt|enc|xml|properties|html|java|py|cpp|c|log|md|h|conf|config|cfg)$")).withFilterDirectories(false)
+                    .withTitle("Choose File")
+                    .withRequestCode(106).start();
+            noFileChosen = true;
+        }
     }
 }
