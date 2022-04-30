@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
             MaterialFilePicker materialFilePicker = new MaterialFilePicker();
             materialFilePicker.withActivity(MainActivity.this);
             materialFilePicker.withCloseMenu(true).withPath(Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+DEFAULT_LOCATION)
-                    .withRootPath(Environment.getExternalStorageDirectory().getAbsolutePath()).withHiddenFiles(false)
+                    .withRootPath(Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+DEFAULT_LOCATION).withHiddenFiles(false)
                     .withFilter(Pattern.compile(".*\\.(txt)$")).withFilterDirectories(false)
                     .withTitle("Choose File")
                     .withRequestCode(CHOOSE_FILE_CODE_ENC).start();
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
             MaterialFilePicker materialFilePicker = new MaterialFilePicker();
             materialFilePicker.withActivity(MainActivity.this);
             materialFilePicker.withCloseMenu(true).withPath(Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+DEFAULT_LOCATION)
-                    .withRootPath(Environment.getExternalStorageDirectory().getAbsolutePath()).withHiddenFiles(false)
+                    .withRootPath(Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+DEFAULT_LOCATION).withHiddenFiles(false)
                     .withFilter(Pattern.compile(".*\\.(enc)$")).withFilterDirectories(false)
                     .withTitle("Choose File")
                     .withRequestCode(CHOOSE_FILE_CODE_DEC).start();

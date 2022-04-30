@@ -55,9 +55,7 @@ public class OpenFile extends AppCompatActivity {
 
             Intent intent = getIntent();
             if(intent != null && intent.getType() != null ) {
-
                 openIntentFile(intent.getData());
-
             } else {
                 initActivity();
             }
@@ -166,7 +164,7 @@ public class OpenFile extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setCancelable(false)
                 .setTitle("Notice")
-                .setMessage("Due to new scoped storage policy of android 11, reading files from outside of documents folder is somewhat difficult. But don't worry this feature will be back soon.\nFor now choose files from here :)")
+                .setMessage("Due to new scoped storage policy of android 11, accessing files from outside of app folder is restricted.\nOnly files inside 'TextEditor' folder can be opened")
                 .setPositiveButton("ok, i understand", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -180,7 +178,7 @@ public class OpenFile extends AppCompatActivity {
         MaterialFilePicker materialFilePicker = new MaterialFilePicker();
         materialFilePicker.withActivity(OpenFile.this);
         materialFilePicker.withCloseMenu(true).withPath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + DEFAULT_LOCATION)
-                .withRootPath(Environment.getExternalStorageDirectory().getAbsolutePath()).withHiddenFiles(false)
+                .withRootPath(Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+DEFAULT_LOCATION).withHiddenFiles(false)
                 .withFilter(Pattern.compile(".*\\.(txt|enc|xml|properties|html|java|py|cpp|c|log|md|h|conf|config|cfg)$")).withFilterDirectories(false)
                 .withTitle("Choose File")
                 .withRequestCode(106).start();
