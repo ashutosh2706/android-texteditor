@@ -8,7 +8,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 
-import m.ashutosh.textencryptor_lib.Encryptor;
 import m.ashutosh.toastertoast.Toaster;
 
 public class EncryptUtil {
